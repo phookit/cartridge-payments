@@ -83,10 +83,14 @@ class PaypalSubmissionForm(base.ExternalPaymentForm):
         self.fields['return'].initial = self.lambda_reverse(\
             settings.PAYPAL_RETURN_URL, cart, self.order.callback_uuid, \
             order_form)
-
+        print "RETURN URL FIELD:",self.fields['return'].initial
+            
+        #self.fields['notify_url'].initial = self.lambda_reverse(\
+        #    settings.PAYPAL_IPN_URL, cart, self.order.callback_uuid, order_form)
         self.fields['notify_url'].initial = self.lambda_reverse(\
-            settings.PAYPAL_IPN_URL, cart, self.order.callback_uuid, order_form)
-
+            settings.PAYPAL_IPN_URL, cart, request.session.session_key, order_form)
+        print "NOTIFY URL FIELD:",self.fields['notify_url'].initial
+            
     def add_line_item(self, number, name, amount, quantity):
         # FIELDS
         self.fields['item_name_%d' % number] = self._hidden_charfield()
