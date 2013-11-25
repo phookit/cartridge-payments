@@ -61,7 +61,7 @@ from django.views.generic import TemplateView
 import urllib
 from mezzanine.conf import settings
 
-#@csrf_exempt
+
 class Endpoint(TemplateView):
     
     default_response_text = 'Nothing to see here'
@@ -69,7 +69,7 @@ class Endpoint(TemplateView):
     
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
-        return super(TemplateView, self).dispatch(*args, **kwargs)
+        return super(EndPoint, self).dispatch(*args, **kwargs)
         
         
     def do_post(self, url, args):
@@ -95,12 +95,14 @@ class Endpoint(TemplateView):
         
         if request.method == 'POST':
             
+            ipn_handler = settings.ORDER_IPN_HANDLER_CLASS()
+            
             data = dict(request.POST.items())
             # We need to post that BACK to PayPal to confirm it
             if self.verify(data):
-                r = self.process(data, uuid)
+                r = ipn_handler.process(data, uuid)
             else:
-                r = self.process_invalid(data, uuid)
+                r = ipn_handler.process_invalid(data, uuid)
         if r:
             return r
         else:
